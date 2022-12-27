@@ -1,0 +1,260 @@
+[3:01 PM, 12/27/2022] Sanket Kharate:  sudo -i -u postgres
+[sudo] password for bca41: 
+postgres@bca41-HP-Compaq-Elite-8300-SFF:~$ psql
+psql (10.22 (Ubuntu 10.22-0ubuntu0.18.04.1))
+Type "help" for help.
+
+postgres=# \d
+postgres=# create table bus(busno int primary key,bcapacity int,deport_name varchar(40));
+CREATE TABLE
+postgres=# insert into bus(1,70,'pune');
+ERROR:  syntax error at or near "1"
+LINE 1: insert into bus(1,70,'pune');
+                        ^
+postgres=# insert into bus values(1,70,'pune');
+INSERT 0 1
+postgres=# insert into bus(2,75,'kothrud');
+ERROR:  syntax error at or near "2"
+LINE 1: insert into bus(2,75,'kothrud');
+                        ^
+postgres=# insert into bus values(2,75,'kothrud');
+INSERT 0 1
+postgres=# insert into bus values(3,40,'vimannager');
+INSERT 0 1
+postgres=# insert into bus values(4,50,'wagholi');
+INSERT 0 1
+postgres=# insert into bus values(2,60,'pune');
+ERROR:  duplicate key value violates unique constraint "bus_pkey"
+DETAIL:  Key (busno)=(2) already exists.
+postgres=# insert into bus values(5,60,'pune');
+INSERT 0 1
+postgres=# insert into bus values(5,80,'a.bad');
+ERROR:  duplicate key value violates unique constraint "bus_pkey"
+DETAIL:  Key (busno)=(5) already exists.
+postgres=# insert into bus values(6,80,'a.bad');
+INSERT 0 1
+postgres=# select * from bus;
+ busno | bcapacity | deport_name 
+-------+-----------+-------------
+     1 |        70 | pune
+     2 |        75 | kothrud
+     3 |        40 | vimannager
+     4 |        50 | wagholi
+     5 |        60 | pune
+     6 |        80 | a.bad
+(6 rows)
+
+postgres=# create table route(rno int primary key,source varchar(30),destination varchar(40),no_of_station int);
+CREATE TABLE
+postgres=# drop table bus;
+DROP TABLE
+postgres=# create table bus(busno int primary key,bcapacity int,deport_name varchar(40),rno int references route(rno));
+CREATE TABLE
+postgres=# insert into route values(1,'pune','wagholi',12);
+INSERT 0 1
+postgres=# insert into route values(2,'mumbai','ala',10);
+INSERT 0 1
+postgres=# insert into route values(3,'b','a',11);
+INSERT 0 1
+postgres=# insert into route values(4,'m','b',05);
+INSERT 0 1
+postgres=# insert into route values(5,'p','u',05);
+INSERT 0 1
+postgres=# insert into bus values(1,70,'pune',1);
+INSERT 0 1
+postgres=# insert into bus values(2,60,'mumbai',2);
+INSERT 0 1
+postgres=# insert into bus values(3,45,'pune',33);
+ERROR:  insert or update on table "bus" violates foreign key constraint "bus_rno_fkey"
+DETAIL:  Key (rno)=(33) is not present in table "route".
+postgres=# insert into bus values(3,45,'pune',3);
+INSERT 0 1
+postgres=# insert into bus values(4,80,'b',5);
+INSERT 0 1
+postgres=# insert into bus values(5,80,'b',4);
+INSERT 0 1
+postgres=# select * from bus;
+ busno | bcapacity | deport_name | rno 
+-------+-----------+-------------+-----
+     1 |        70 | pune        |   1
+     2 |        60 | mumbai      |   2
+     3 |        45 | pune        |   3
+     4 |        80 | b           |   5
+     5 |        80 | b           |   4
+(5 rows)
+
+postgres=# select * from route;
+ rno | source | destination | no_of_station 
+-----+--------+-------------+---------------
+   1 | pune   | wagholi     |            12
+   2 | mumbai | ala         |            10
+   3 | b      | a           |            11
+   4 | m      | b           |             5
+   5 | p      | u           |             5
+(5 rows)
+
+postgres=# create table driver(d_no,int primary key,d_name varchar(20),l_no int,adds varchar(40),age int);
+ERROR:  syntax error at or near "primary"
+LINE 1: create table driver(d_no,int primary key,d_name varchar(20),...
+                                     ^
+postgres=# create table driver(d_no int primary key,d_name varchar(20),l_no int,adds varchar(40),age int);
+CREATE TABLE
+postgres=# insert into driver values(1,'sam','122','pune',18);
+INSERT 0 1
+postgres=# insert into driver values(2,'ram','432','wagholi',29);
+INSERT 0 1
+postgres=# insert into driver values(3,'sham','567','a',69);
+INSERT 0 1
+postgres=# insert into driver values(4,'vaibhav','903','mumbai',56);
+INSERT 0 1
+postgres=# insert into driver values(5,'raju','904','b',40);
+INSERT 0 1
+postgres=# create table b_d_table(bno int references bus(busno),dno int references driver(d_no),date_of_duty date,shift varchar(40));
+CREATE TABLE
+postgres=# insert into b_d_table values(1,5,'2022-10-12','night');
+INSERT 0 1
+postgres=# insert into b_d_table values(1,4,'2022-10-12','day');
+INSERT 0 1
+postgres=# insert into b_d_table values(3,3,'2022-10-13','day');
+INSERT 0 1
+postgres=# insert into b_d_table values(1,2,'2022-10-13','night');
+INSERT 0 1
+postgres=# insert into b_d_table values(2,1,'2022-10-10','night');
+INSERT 0 1
+postgres=# select * from bus;
+ busno | bcapacity | deport_name | rno 
+-------+-----------+-------------+-----
+     1 |        70 | pune        |   1
+     2 |        60 | mumbai      |   2
+     3 |        45 | pune        |   3
+     4 |        80 | b           |   5
+     5 |        80 | b           |   4
+(5 rows)
+
+postgres=# select * from driver;
+ d_no | d_name  | l_no |  adds   | age 
+------+---------+------+---------+-----
+    1 | sam     |  122 | pune    |  18
+    2 | ram     |  432 | wagholi |  29
+    3 | sham    |  567 | a       |  69
+    4 | vaibhav |  903 | mumbai  |  56
+    5 | raju    |  904 | b       |  40
+(5 rows)
+
+postgres=# select * from route;
+ rno | source | destination | no_of_station 
+-----+--------+-------------+---------------
+   1 | pune   | wagholi     |            12
+   2 | mumbai | ala         |            10
+   3 | b      | a           |            11
+   4 | m      | b           |             5
+   5 | p      | u           |             5
+(5 rows)
+
+postgres=# select * from b_d_table;
+ bno | dno | date_of_duty | shift 
+-----+-----+--------------+-------
+   1 |   5 | 2022-10-12   | night
+   1 |   4 | 2022-10-12   | day
+   3 |   3 | 2022-10-13   | day
+   1 |   2 | 2022-10-13   | night
+   2 |   1 | 2022-10-10   | night
+(5 rows)
+
+postgres=# create view v1 as
+postgres-# select * from driver where age > 40;
+ERROR:  relation "v1" already exists
+postgres=# create view v10 as
+select * from driver where age > 40;
+CREATE VIEW
+postgres=# select * from v10;
+ d_no | d_name  | l_no |  adds  | age 
+------+---------+------+--------+-----
+    3 | sham    |  567 | a      |  69
+    4 | vaibhav |  903 | mumbai |  56
+(2 rows)
+
+postgres=# create view v11 as
+postgres-# select busno,d_name,shift,age,l_no,adds  from bus,driver,b_d_table where shift='night' and busno=1 and bus.busno=b_d_table.b.no and driver.d_no=b_d_table.dno;
+ERROR:  missing FROM-clause entry for table "b"
+LINE 2: ...ble where shift='night' and busno=1 and bus.busno=b_d_table....
+                                                             ^
+postgres=# create view v11 as
+select busno,d_name,shift,age,l_no,adds  from bus,driver,b_d_table where shift='night' and busno=1 and bus.busno=b_d_table.bno and driver.d_no=b_d_table.dno;
+ERROR:  relation "v11" already exists
+postgres=# create view v12 as
+select busno,d_name,shift,age,l_no,adds  from bus,driver,b_d_table where shift='night' and busno=1 and bus.busno=b_d_table.bno and driver.d_no=b_d_table.dno;
+CREATE VIEW
+postgres=# select * from v12;
+ busno | d_name | shift | age | l_no |  adds   
+-------+--------+-------+-----+------+---------
+     1 | raju   | night |  40 |  904 | b
+     1 | ram    | night |  29 |  432 | wagholi
+(2 rows)
+
+postgres=# create view v14 as
+postgres-#  select d_name,shift,deport_name from driver,b_d_table,bus where deport_name='pune' where date_of_duty betweeen '
+[3:01 PM, 12/27/2022] Sanket Kharate: postgres=# select * from bus;
+ busno | bcapacity | deport_name | rno 
+-------+-----------+-------------+-----
+     1 |        70 | pune        |   1
+     2 |        60 | mumbai      |   2
+     3 |        45 | pune        |   3
+     4 |        80 | b           |   5
+     5 |        80 | b           |   4
+(5 rows)
+
+postgres=# select * from driver;
+ d_no | d_name  | l_no |  adds   | age 
+------+---------+------+---------+-----
+    1 | sam     |  122 | pune    |  18
+    2 | ram     |  432 | wagholi |  29
+    3 | sham    |  567 | a       |  69
+    4 | vaibhav |  903 | mumbai  |  56
+    5 | raju    |  904 | b       |  40
+(5 rows)
+
+postgres=# select * from route;
+ rno | source | destination | no_of_station 
+-----+--------+-------------+---------------
+   1 | pune   | wagholi     |            12
+   2 | mumbai | ala         |            10
+   3 | b      | a           |            11
+   4 | m      | b           |             5
+   5 | p      | u           |             5
+(5 rows)
+
+postgres=# select * from b_d_table;
+ bno | dno | date_of_duty | shift 
+-----+-----+--------------+-------
+   1 |   5 | 2022-10-12   | night
+   1 |   4 | 2022-10-12   | day
+   3 |   3 | 2022-10-13   | day
+   1 |   2 | 2022-10-13   | night
+   2 |   1 | 2022-10-10   | night
+(5 rows)
+
+
+postgres=# create view v14 as
+postgres-# select d_name,shift,deport_name from bus,b_d_table,driver where deport_name='pune' and bus.busno=b_d_table.bno and driver.d_no=b_d_table.dno;
+CREATE VIEW
+
+
+postgres=# select * from v14; 
+ d_name  | shift | deport_name 
+---------+-------+-------------
+ raju    | night | pune
+ vaibhav | day   | pune
+ sham    | day   | pune
+ ram     | night | pune
+(4 rows)
+
+
+                                                                                                                        ^
+postgres=# create view v15 as
+select busno from bus,route where source='pune' and route.destination ='wagholi' and bus.rno=route.rno;
+CREATE VIEW
+postgres=# select * from v15; 
+ busno 
+-------
+     1

@@ -1,0 +1,338 @@
+
+postgres=# craete table branch(bid  int primary key,bname varchar(30),b_city varchar(30));
+ERROR:  syntax error at or near "craete"
+LINE 1: craete table branch(bid  int primary key,bname varchar(30),b...
+        ^
+postgres=# create table branch(bid  int primary key,bname varchar(30),b_city varchar(30));
+ERROR:  relation "branch" already exists
+postgres=# create table branch1(bid  int primary key,bname varchar(30),b_city varchar(30));
+ERROR:  relation "branch1" already exists
+postgres=# create table branch12(bid  int primary key,bname varchar(30),b_city varchar(30));
+CREATE TABLE
+postgres=# INSERT INTO branch12 values(1,'SBI','pune');
+INSERT 0 1
+postgres=# INSERT INTO branch12 values(2,'HDFC','wagholi');
+INSERT 0 1
+postgres=# INSERT INTO branch12 values(3,'kotak','nager');
+INSERT 0 1
+postgres=# INSERT INTO branch12 values(4,'idbi','vimannager');
+INSERT 0 1
+postgres=# INSERT INTO branch12 values(5,'MNP','kothrud');
+INSERT 0 1
+postgres=# INSERT INTO branch12 values(6,'xyz','pune');
+INSERT 0 1
+postgres=# create table customer12(cno int primary key,cname varchar(30),c_adds varchar(40),city varchar(30));
+CREATE TABLE
+postgres=# insert into  customer12 values(1,'sam','shivaji_nager','pune');
+INSERT 0 1
+postgres=# insert into  customer12 values(2,'ram','nager road','wagholi');
+INSERT 0 1
+postgres=# insert into  customer12 values(3,'sham','jay nager','pune');
+INSERT 0 1
+postgres=# insert into  customer12 values(4,'smith','ramnager','vimannager');
+INSERT 0 1
+postgres=# insert into  customer12 values(5,'jonny','smd hospital','vimannager');
+INSERT 0 1
+postgres=# create table loan_application(ino int primary key,l_amt_required money,l_approved money,ldate date);
+CREATE TABLE
+postgres=# insert into loan_application(1,500000,400000,'2012-june-24');
+ERROR:  syntax error at or near "1"
+LINE 1: insert into loan_application(1,500000,400000,'2012-june-24')...
+                                     ^
+postgres=# insert into loan_application values(1,500000,400000,'2012-june-24');
+INSERT 0 1
+postgres=# insert into loan_application values(2,600000,500000,'2015-jan-21');
+INSERT 0 1
+postgres=# insert into loan_application values(3,500000,500000,'2018-aug-22');
+INSERT 0 1
+postgres=# insert into loan_application values(4,550000,500000,'2014-apr-20');
+INSERT 0 1
+postgres=# insert into loan_application values(5,375000,300000,'2014-mar-23');
+INSERT 0 1
+postgres=# create table ternary(bid int references branch12(bid),cno int references customer(cno),lno int references loan_application(ino));
+CREATE TABLE
+postgres=# select * from branch;
+ bno |             brname             |                  brcity                  
+-----+--------------------------------+------------------------------------------
+   1 | nager                          | nager                                   
+   2 | shivaji nager                  | pune                                    
+   3 | karve nager                    | pune                                    
+   4 | solapur                        | solapur                                 
+(4 rows)
+
+postgres=# select * from customer;
+ cno | cname | caddr 
+-----+-------+-------
+(0 rows)
+
+postgres=# select * from customer12;
+ cno | cname |    c_adds     |    city    
+-----+-------+---------------+------------
+   1 | sam   | shivaji_nager | pune
+   2 | ram   | nager road    | wagholi
+   3 | sham  | jay nager     | pune
+   4 | smith | ramnager      | vimannager
+   5 | jonny | smd hospital  | vimannager
+(5 rows)
+
+postgres=# select * from customer12;
+ cno | cname |    c_adds     |    city    
+-----+-------+---------------+------------
+   1 | sam   | shivaji_nager | pune
+   2 | ram   | nager road    | wagholi
+   3 | sham  | jay nager     | pune
+   4 | smith | ramnager      | vimannager
+   5 | jonny | smd hospital  | vimannager
+(5 rows)
+
+postgres=# select * from loan_application;
+ ino | l_amt_required | l_approved  |   ldate    
+-----+----------------+-------------+------------
+   1 |    ₹500,000.00 | ₹400,000.00 | 2012-06-24
+   2 |    ₹600,000.00 | ₹500,000.00 | 2015-01-21
+   3 |    ₹500,000.00 | ₹500,000.00 | 2018-08-22
+   4 |    ₹550,000.00 | ₹500,000.00 | 2014-04-20
+   5 |    ₹375,000.00 | ₹300,000.00 | 2014-03-23
+(5 rows)
+
+postgres=# insert into ternary values(5,2,1);
+ERROR:  insert or update on table "ternary" violates foreign key constraint "ternary_cno_fkey"
+DETAIL:  Key (cno)=(2) is not present in table "customer".
+postgres=# create table ternary(bid int references branch12(bid),cno int references customer12(cno),lno int references loan_application(ino)); 
+ERROR:  relation "ternary" already exists
+postgres=# drop table ternary;
+DROP TABLE
+postgres=# create table ternary(bid int references branch12(bid),cno int references customer12(cno),lno int references loan_application(ino));
+CREATE TABLE
+postgres=# insert into ternary values(5,2,1);
+INSERT 0 1
+postgres=# insert into ternary values(1,1,2);
+INSERT 0 1
+postgres=# insert into ternary values(2,3,5);
+INSERT 0 1
+postgres=# insert into ternary values(4,5,3\);
+Invalid command \);. Try \? for help.
+postgres(# insert into ternary values(4,5,3);
+postgres(# );
+ERROR:  syntax error at or near "insert"
+LINE 2: insert into ternary values(4,5,3);
+        ^
+postgres=# insert into ternary values(4,5,3);
+INSERT 0 1
+postgres=# insert into ternary values(3,4,4);
+INSERT 0 1
+postgres=# select * from customer12;
+ cno | cname |    c_adds     |    city    
+-----+-------+---------------+------------
+   1 | sam   | shivaji_nager | pune
+   2 | ram   | nager road    | wagholi
+   3 | sham  | jay nager     | pune
+   4 | smith | ramnager      | vimannager
+   5 | jonny | smd hospital  | vimannager
+(5 rows)
+
+postgres=# select * from branch12;
+ bid | bname |   b_city   
+-----+-------+------------
+   1 | SBI   | pune
+   2 | HDFC  | wagholi
+   3 | kotak | nager
+   4 | idbi  | vimannager
+   5 | MNP   | kothrud
+   6 | xyz   | pune
+(6 rows)
+
+postgres=# select * from loan_application;
+ ino | l_amt_required | l_approved  |   ldate    
+-----+----------------+-------------+------------
+   1 |    ₹500,000.00 | ₹400,000.00 | 2012-06-24
+   2 |    ₹600,000.00 | ₹500,000.00 | 2015-01-21
+   3 |    ₹500,000.00 | ₹500,000.00 | 2018-08-22
+   4 |    ₹550,000.00 | ₹500,000.00 | 2014-04-20
+   5 |    ₹375,000.00 | ₹300,000.00 | 2014-03-23
+(5 rows)
+
+postgres=# select * from ternary;
+ bid | cno | lno 
+-----+-----+-----
+   5 |   2 |   1
+   1 |   1 |   2
+   2 |   3 |   5
+   4 |   5 |   3
+   3 |   4 |   4
+(5 rows)
+
+postgres=# create view a10 as
+postgres-# select cname,c_adds,city from customer12,loan_application where l_approved  <  l_amt_required  where customer12.cno=loan_application.cno;
+ERROR:  syntax error at or near "where"
+LINE 2: ..._application where l_approved  <  l_amt_required  where cust...
+                                                             ^
+postgres=# create view a10 as
+select cname,c_adds,city from customer12,loan_application where l_approved  <  l_amt_required  and customer12.cno=loan_application.cno;
+ERROR:  column loan_application.cno does not exist
+LINE 2: ...l_approved  <  l_amt_required  and customer12.cno=loan_appli...
+                                                             ^
+HINT:  Perhaps you meant to reference the column "loan_application.ino".
+postgres=# create view a10 as
+select cname,c_adds,city from customer12,loan_application,ternary where l_approved  <  l_amt_required  where customer12.cno=ternary.cno and loan_appication.lno=ternary.lno;
+ERROR:  syntax error at or near "where"
+LINE 2: ...tion,ternary where l_approved  <  l_amt_required  where cust...
+                                                             ^
+postgres=# create view a10 as
+select cname,c_adds,city from customer12,loan_application,ternary where l_approved  <  l_amt_required and customer12.cno=ternary.cno and loan_appication.lno=ternary.lno;
+ERROR:  missing FROM-clause entry for table "loan_appication"
+LINE 2: ...l_amt_required and customer12.cno=ternary.cno and loan_appic...
+                                                             ^
+postgres=# create view a10 as
+select cname,c_adds,city from customer12,loan_application,ternary where l_approved  <  l_amt_required and customer12.cno=ternary.cno and loan_appication.ino=ternary.lno;
+ERROR:  missing FROM-clause entry for table "loan_appication"
+LINE 2: ...l_amt_required and customer12.cno=ternary.cno and loan_appic...
+                                                             ^
+postgres=# create view a10 as
+select cname,c_adds,city from customer12,loan_application,ternary where l_approved  <  l_amt_required and customer12.cno=ternary.cno and loan_application.ino=ternary.lno;
+CREATE VIEW
+postgres=# select * from a10;
+ cname |    c_adds     |    city    
+-------+---------------+------------
+ ram   | nager road    | wagholi
+ sam   | shivaji_nager | pune
+ sham  | jay nager     | pune
+ smith | ramnager      | vimannager
+(4 rows)
+
+postgres=# create view a12 as
+postgres-# ;
+ERROR:  syntax error at or near ";"
+LINE 2: ;
+        ^
+postgres=# insert into ternary values(4,5,1);
+INSERT 0 1
+postgres=# create view a12 as
+postgres-# select  bname,sum(l_approved) from branch12,loan_applicaton,ternary where ldate between '2012-05-24' to '2012-12-24' and branch12.bno=ternary.bid and loan_application.ino=ternary.lno;
+ERROR:  syntax error at or near "to"
+LINE 3: ...plicaton,ternary where ldate between '2012-05-24' to '2012-1...
+                                                             ^
+postgres=# create view a12 as
+select  bname,sum(l_approved) from branch12,loan_applicaton,ternary where ldate between '2012-05-24' and '2012-12-24' and branch12.bno=ternary.bid and loan_application.ino=ternary.lno;
+ERROR:  relation "loan_applicaton" does not exist
+LINE 2: select  bname,sum(l_approved) from branch12,loan_applicaton,...
+                                                    ^
+postgres=# create view a12 as
+select  bname,sum(l_approved) from branch12,loan_application,ternary where ldate between '2012-05-24' and '2012-12-24' and branch12.bno=ternary.bid and loan_application.ino=ternary.lno;
+ERROR:  column branch12.bno does not exist
+LINE 2: ...e ldate between '2012-05-24' and '2012-12-24' and branch12.b...
+                                                             ^
+postgres=# create view a12 as
+select  bname,sum(l_approved) from branch12,loan_application,ternary where ldate between '2012-05-24' and '2012-12-24' and branch12.bid=ternary.bid and loan_application.ino=ternary.lno;
+ERROR:  column "branch12.bname" must appear in the GROUP BY clause or be used in an aggregate function
+LINE 2: select  bname,sum(l_approved) from branch12,loan_application...
+                ^
+postgres=# create view a12 as
+select ,sum(l_approved) from branch12,loan_application,ternary where ldate between '2012-05-24' and '2012-12-24' and branch12.bid=ternary.bid and loan_application.ino=ternary.lno and group by(bname);;
+ERROR:  syntax error at or near ","
+LINE 2: select ,sum(l_approved) from branch12,loan_application,terna...
+               ^
+postgres=# create view a12 as
+select sum(l_approved) from branch12,loan_application,ternary where ldate between '2012-05-24' and '2012-12-24' and branch12.bid=ternary.bid and loan_application.ino=ternary.lno and group by(bname);;
+ERROR:  syntax error at or near "group"
+LINE 2: ...nary.bid and loan_application.ino=ternary.lno and group by(b...
+                                                             ^
+postgres=# create view a12 as
+select sum(l_approved) from branch12,loan_application,ternary where ldate between '2012-05-24' and '2012-12-24' and branch12.bid=ternary.bid and loan_application.ino=ternary.lno group by(bname);;
+CREATE VIEW
+postgres=# select * from a12;
+     sum     
+-------------
+ ₹400,000.00
+ ₹400,000.00
+(2 rows)
+
+postgres=# drop view a12;
+DROP VIEW
+postgres=# create view a12 as
+select sum(l_approved),bname from branch12,loan_application,ternary where ldate between '2012-05-24' and '2012-12-24' and branch12.bid=ternary.bid and loan_application.ino=ternary.lno group by(bname);;
+CREATE VIEW
+postgres=# drop view a12;
+DROP VIEW
+postgres=# create view a12 as
+select sum(l_approved),bname from branch12,loan_application,ternary where ldate between '2012-05-24' and '2012-12-24' and branch12.bid=ternary.bid and loan_application.ino=ternary.lno group by(bname);;
+CREATE VIEW
+postgres=# select * from a12;
+     sum     | bname 
+-------------+-------
+ ₹400,000.00 | idbi
+ ₹400,000.00 | MNP
+(2 rows)
+
+postgres=# drop view a12;
+DROP VIEW
+postgres=# create view a12 as
+select sum(l_approved),bname from branch12,loan_application,ternary where ldate between '2012-05-24' and '2018-12-24' and branch12.bid=ternary.bid and loan_application.ino=ternary.lno group by(bname);;
+CREATE VIEW
+postgres=# select * from a12;
+     sum     | bname 
+-------------+-------
+ ₹300,000.00 | HDFC
+ ₹900,000.00 | idbi
+ ₹500,000.00 | kotak
+ ₹400,000.00 | MNP
+ ₹500,000.00 | SBI
+(5 rows)
+
+postgres=# create view a13
+postgres-# as
+postgres-# select  2012-06-24
+postgres-# ;
+CREATE VIEW
+postgres=# create view a13
+as
+postgres-# select cname,l_amt_required from customer12,loan_application where l_amt_required < 450000 and customer12.cno=ternary.cno and loan_application.ino=ternary.lno;
+ERROR:  operator does not exist: money < integer
+LINE 3: ... customer12,loan_application where l_amt_required < 450000 a...
+                                                             ^
+HINT:  No operator matches the given name and argument type(s). You might need to add explicit type casts.
+postgres=# create view a13
+as
+select cname,l_amt_required from customer12,loan_application where l_amt_required <  ₹450000 and customer12.cno=ternary.cno and loan_application.ino=ternary.lno;
+ERROR:  column "₹450000" does not exist
+LINE 3: ...stomer12,loan_application where l_amt_required <  ₹450000 an...
+                                                             ^
+postgres=# create view a13
+as
+select cname,l_amt_required from customer12,loan_application where l_amt_required < ₹450000 and customer12.cno=ternary.cno and loan_application.ino=ternary.lno;
+ERROR:  column "₹450000" does not exist
+LINE 3: ...ustomer12,loan_application where l_amt_required < ₹450000 an...
+                                                             ^
+postgres=# create view a13
+as
+select cname,l_amt_required from customer12,loan_application where l_amt_required < ₹450000 and customer12.cno=ternary.cno and loan_application.ino=ternary.lno;
+ERROR:  column "₹450000" does not exist
+LINE 3: ...ustomer12,loan_application where l_amt_required < ₹450000 an...
+                                                             ^
+postgres=# create view a13
+as
+select cname,l_amt_required from customer12,loan_application where l_amt_required <  ₹400,000.00  and customer12.cno=ternary.cno and loan_application.ino=ternary.lno group by(bname);
+ERROR:  syntax error at or near ","
+LINE 3: ...er12,loan_application where l_amt_required <  ₹400,000.00  a...
+                                                             ^
+postgres=# create view a13
+as
+select cname,l_amt_required from customer12,loan_application where l_amt_required <  ₹400.000.00  and customer12.cno=ternary.cno and loan_application.ino=ternary.lno group by(bname);
+ERROR:  syntax error at or near ".000"
+LINE 3: ...er12,loan_application where l_amt_required <  ₹400.000.00  a...
+                                                             ^
+postgres=# create view a13
+as
+select cname,l_amt_required from customer12,loan_application where l_amt_required <  ₹400,000.00  and customer12.cno=ternary.cno and loan_application.ino=ternary.lno group by(bname);
+ERROR:  syntax error at or near ","
+LINE 3: ...er12,loan_application where l_amt_required <  ₹400,000.00  a...
+                                                             ^
+postgres=# create view a13
+as
+select cname,l_amt_required from customer12,loan_application where l_amt_required < ₹400,000.00  and customer12.cno=ternary.cno and loan_application.ino=ternary.lno group by(bname);
+ERROR:  syntax error at or near ","
+LINE 3: ...mer12,loan_application where l_amt_required < ₹400,000.00  a...
+                                                             ^
+postgres=# create view a13
+as
+select cname,l_amt_required from customer12,loan_application where l_amt_required < 400000  and customer12.cno=ternary.cno and loan_application.ino=ternary.lno group by(bname);

@@ -1,0 +1,73 @@
+ostgres=# select * from project;
+ p_no |             p_name             |             p_type             | duration 
+------+--------------------------------+--------------------------------+----------
+    1 | ERP                            | aaa                            |        6
+    2 | ABC                            | zzz                            |        8
+    3 | XYZ                            | bbb                            |        7
+    4 | PQR                            | rrr                            |        9
+(4 rows)
+
+postgres=# select * from employee;
+ e_no |        e_name        |         qualification          | joining_date 
+------+----------------------+--------------------------------+--------------
+    1 | Kajal                | MCA                            | 2012-06-05
+    2 | priti                | MCA                            | 2011-03-13
+    3 | ashwini              | MSC                            | 2015-12-23
+(3 rows)
+
+postgres=# create table p_e_table(p_no int references project(p_no),e_no int references employee(e_no),start_date date,no_of_house_worked int);
+CREATE TABLE
+postgres=# insert into p_e_table values(1,3,'2000-12-30',89);
+INSERT 0 1
+postgres=# insert into p_e_table values(4,2,'2018-01-3',150);
+INSERT 0 1
+postgres=# insert into p_e_table values(3,1,'2010-2-28', 30);
+INSERT 0 1
+postgres=# select * from employee;
+ e_no |        e_name        |         qualification          | joining_date 
+------+----------------------+--------------------------------+--------------
+    1 | Kajal                | MCA                            | 2012-06-05
+    2 | priti                | MCA                            | 2011-03-13
+    3 | ashwini              | MSC                            | 2015-12-23
+(3 rows)
+
+
+ostgres=# create view v1 as
+postgres-# select e_name from employee as e,project as p,p_e_table as t where p_name='ERP' and e.e_no=t.e_no and p.p_no=t.p_no;
+CREATE VIEW
+postgres=# select * from v1;
+        e_name        
+----------------------
+ ashwini             
+(1 row)
+
+postgres=# create view v3 as
+select p_name,p_type,joining_date,start_date from project as p,p_e_table as t,employee as e where duration > 6 and e.e_no=t.e_no and p.p_no=t.p_no order by start_date asc;
+CREATE VIEW
+postgres=# select * from v3;
+             p_name             |             p_type             | joining_date | start_date 
+--------------------------------+--------------------------------+--------------+------------
+ XYZ                            | bbb                            | 2012-06-05   | 2010-02-28
+ PQR                            | rrr                            | 2011-03-13   | 2018-01-03
+(2 rows)
+
+
+postgres=# create view v4 as
+select e_name,qualification,joining_date from employee where qualification='MCA';
+CREATE VIEW
+postgres=# select * from v4;
+        e_name        |         qualification          | joining_date 
+----------------------+--------------------------------+--------------
+ Kajal                | MCA                            | 2012-06-05
+ priti                | MCA                            | 2011-03-13
+(2 rows)
+
+
+create view v5 as
+postgres-# select p_name,e_name from project as p,employee as e,p_e_table as t where no_of_house_worked=150 and p.p_no=t.p_no and e.e_no=t.e_no;
+CREATE VIEW
+postgres=# select * from v5;
+             p_name             |        e_name        
+--------------------------------+----------------------
+ PQR                            | priti               
+(1 row)
